@@ -12,7 +12,7 @@ def print_usage():
     sys.stderr.write("available errors: \n")
     sys.stderr.write("\tassertion, io, import, index\n")
     sys.stderr.write("\tkey, name, os, type, value,\n")
-    sys.stderr.write("\tattribute, eof, floatingpoint, generatorexit,\n")
+    sys.stderr.write("\tattribute, eof, unbound, generatorexit,\n")
     sys.stderr.write("\tzerodivision\n")
     sys.exit()
 
@@ -59,13 +59,23 @@ elif error_type == "eof":
 	while True:
 		data = input('prompt:')
 		print 'READ:', data
-elif error_type == "floatingpoint":
-	import math
-	import fpectl
+elif error_type == "unbound":
+	def throws_global_name_error():
+		print unknown_global_name
 
-	print 'control off:', math.exp(1000)
-	fpectl.turnon_sigfpe()
-	print 'Control on:', math.exp(1000)
+	def throws_unbound_local():
+		local_val = local_val + 1
+		print local_val
+
+	try:
+		throws_global_name_error()
+	except NameError, err:
+		print 'Global name error:', err
+
+	try:
+		throws_unbound_local()
+	except UnboundLocalError, err:
+		print 'Local name error:', err
 elif error_type == "generatorexit":
 	def my_generator():
    		try:
