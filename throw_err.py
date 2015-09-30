@@ -3,24 +3,15 @@
 # This script raises an error based on 
 # user-supplied command line argument
 
-import sys, gc, weakref, os, math, argparse
+import sys, gc, weakref, os, argparse
 
-
-def print_usage():
-    """Print usage and exit"""
-    sys.stderr.write("usage: python throw_err.py <error type>\n")
-    sys.stderr.write("available errors: \n")
-    sys.stderr.write("\tassertion, io, import, index\n")
-    sys.stderr.write("\tkey, name, os, type, value,\n")
-    sys.stderr.write("\tattribute, overflow, unbound, reference,\n")
-    sys.stderr.write("\tzerodivision\n")
-    sys.exit()
-
-# Check args
-if len(sys.argv) != 2:
-    print_usage()
-
-error_type = sys.argv[1]
+available_errors = ["assertion", "io", "import", "index", "key",
+			"name", "os", "type", "value", "attribute", 
+			"overflow", "unbound", "reference", "zerodivision"]
+parser = argparse.ArgumentParser()
+parser.add_argument("error_type", choices = available_errors)
+args = parser.parse_args()
+error_type = args.error_type
 
 if error_type == "assertion":
     assert False, 'The assertion failed'
