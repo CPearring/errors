@@ -3,7 +3,7 @@
 # This script raises an error based on 
 # user-supplied command line argument
 
-import sys
+import sys, gc, weakref, os, math, argparse
 
 
 def print_usage():
@@ -12,7 +12,7 @@ def print_usage():
     sys.stderr.write("available errors: \n")
     sys.stderr.write("\tassertion, io, import, index\n")
     sys.stderr.write("\tkey, name, os, type, value,\n")
-    sys.stderr.write("\tattribute, overflow, unbound, generatorexit,\n")
+    sys.stderr.write("\tattribute, overflow, unbound, reference,\n")
     sys.stderr.write("\tzerodivision\n")
     sys.exit()
 
@@ -58,34 +58,24 @@ elif error_type == "attribute":
 elif error_type == "overflow":
 	print 5.0**50000000000000
 elif error_type == "unbound":
-	def throws_global_name_error():
-		print unknown_global_name
 
-	def throws_unbound_local():
-		local_val = local_val + 1
-		print local_val
+	local_val = local_val + 1
+	print local_val
 
-	try:
-		throws_global_name_error()
-	except NameError, err:
-		print 'Global name error:', err
+elif error_type == "reference":
+	class ExpensiveObject(object):
+		def __init__(self, name):
+			self.name = name
+		def __del__(self):
+			print '(Deleting %s)' % self
+	
+	obj = ExpensiveObject('thing')
+	p = weakref.proxy(obj)
 
-	try:
-		throws_unbound_local()
-	except UnboundLocalError, err:
-		print 'Local name error:', err
-elif error_type == "generatorexit":
-	def my_generator():
-   		try:
-   	    		for i in range(5):
-  	         		print 'Yielding', i
-				yield i
-  	 	except GeneratorExit:
-  	     		print 'Exiting early'
+	print 'BEFORE:', p.name
+	obj = None
+	print 'AFTER:', p.name
 
-	g = my_generator()
-	print g.next()
-	g.close()
 else:
     sys.stderr.write("Sorry, not able to throw a(n) ")
     sys.stderr.write(error_type + " error\n")
