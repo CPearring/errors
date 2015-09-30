@@ -12,7 +12,7 @@ def print_usage():
     sys.stderr.write("available errors: \n")
     sys.stderr.write("\tassertion, io, import, index\n")
     sys.stderr.write("\tkey, name, os, type, value,\n")
-    sys.stderr.write("\tattribute, eof, unbound, generatorexit,\n")
+    sys.stderr.write("\tattribute, overflow, unbound, generatorexit,\n")
     sys.stderr.write("\tzerodivision\n")
     sys.exit()
 
@@ -55,10 +55,8 @@ elif error_type == "attribute":
 
 	o = NoAttributes()
 	print o.attribute
-elif error_type == "eof":
-	while True:
-		data = input('prompt:')
-		print 'READ:', data
+elif error_type == "overflow":
+	print 5.0**50000000000000
 elif error_type == "unbound":
 	def throws_global_name_error():
 		print unknown_global_name
